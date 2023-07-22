@@ -1,3 +1,5 @@
+// Reduxは非同期ロジックを可能にするためにミドルウェアを使用する。
+// 標準的な非同期ミドルウェアはredux-thunkで、Redux Toolkitに含まれている
 import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
@@ -95,6 +97,7 @@ const postsSlice = createSlice({
     },
   },
   // 特定のスライスの状態を更新するための追加のリデューサーを定義する
+  // アクションタイプをリッスンし、それらのアクションに基づいてステートを更新するリデューサーを作成
   extraReducers(builder) {
     // addCaseなど、特定のアクションタイプに対応するリデューサーを追加するためのメソッドを提供
     builder
@@ -117,12 +120,12 @@ const postsSlice = createSlice({
   },
 })
 
-// アクションクリエーター関数。
+// アクションクリエーター関数
 export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
 
 export default postsSlice.reducer
 
+// Reduxのステートから値を読み取るための再利用可能な関数
 export const selectAllPosts = (state) => state.posts.posts
-
 export const selectPostById = (state, postId) =>
   state.posts.posts.find((post) => post.id === postId)

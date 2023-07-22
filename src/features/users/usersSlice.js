@@ -3,6 +3,8 @@ import { client } from '../../api/client'
 
 const initialState = []
 
+// Redux Thunkとは、Reduxのミドルウェアの一つで、
+// アクションクリエーターがオブジェクトではなく関数を返すことを許可
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
   const response = await client.get('/fakeApi/users')
   return response.data
