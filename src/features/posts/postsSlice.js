@@ -6,9 +6,21 @@ import { client } from '../../api/client'
 // 新しい投稿を追加するためには、state.posts.push(action.payload)
 const initialState = {
   posts: [],
+  // 非同期処理が開始されていない状態
   status: 'idle',
   error: null,
 }
+
+export const addNewPost = createAsyncThunk(
+  'posts/addNewPost',
+  // The payload creator receives the partial `{title, content, user}` object
+  async (initialPost) => {
+    // We send the initial data to the fake API server
+    const response = await client.post('/fakeApi/posts', initialPost)
+    // The response includes the complete post object, including unique ID
+    return response.data
+  }
+)
 
 // createAsyncThunkは2つの引数を受け取ります。
 //    アクションのタイププレフィックス：
@@ -82,19 +94,25 @@ const postsSlice = createSlice({
       }
     },
   },
+  // 特定のスライスの状態を更新するための追加のリデューサーを定義する
   extraReducers(builder) {
+    // addCaseなど、特定のアクションタイプに対応するリデューサーを追加するためのメソッドを提供
     builder
+      // addCaseメソッドは、特定のアクションタイプに対応するリデューサーを追加する
       .addCase(fetchPosts.pending, (state, action) => {
         state.status = 'loading'
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded'
-        // Add any fetched posts to the array
+        // ディスパッチされたアクションのペイロードを現在のposts配列に追加し、新しいステートとして設定
         state.posts = state.posts.concat(action.payload)
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.status = 'failed'
         state.error = action.error.message
+      })
+      .addCase(addNewPost.fulfilled, (state, action) => {
+        state.posts.push(action.payload)
       })
   },
 })

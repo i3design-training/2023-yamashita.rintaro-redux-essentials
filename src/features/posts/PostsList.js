@@ -38,17 +38,18 @@ export const PostsList = () => {
     if (postStatus === 'idle') {
       dispatch(fetchPosts())
     }
-    // dispatchが変更されることはほぼないが、依存配列に含めることで、
-    // Reactのルールに従い、潜在的なバグや問題を防ぐ
+    // dispatchが変更されることはほぼないが、
+    // 内部で使用されるすべての外部変数や関数を依存配列に含めるべき、という
+    // Reactのベストプラクティスに従い、潜在的なバグや問題を防ぐ
   }, [postStatus, dispatch])
 
-  // 新しい投稿が先頭に来るように逆の時間順にソート
   let content
 
+  // 非同期処理が進行中で、結果がまだ得られていない状態
   if (postStatus === 'loading') {
     content = <Spinner text="Loading..." />
   } else if (postStatus === 'succeeded') {
-    // Sort posts in reverse chronological order by datetime string
+    // 新しい投稿が先頭に来るように逆の時間順にソート
     const orderedPosts = posts
       .slice()
       .sort((a, b) => b.date.localeCompare(a.date))
