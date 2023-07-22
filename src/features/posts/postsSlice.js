@@ -1,4 +1,5 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
+import { client } from '../../api/client'
 
 // stateは直接配列ではなく、postsというキーを持つオブジェクト
 // posts配列だけでなく、非同期リクエストのstatusとerrorも管理
@@ -8,6 +9,22 @@ const initialState = {
   status: 'idle',
   error: null,
 }
+
+// createAsyncThunkは2つの引数を受け取ります。
+//    アクションのタイププレフィックス：
+//        この例では、'posts/fetchPosts'
+//        この文字列は、生成されるアクションのタイプを決定
+//        createAsyncThunkは、このプレフィックスを使用して3つのアクションタイプを自動的に生成します：
+//            'posts/fetchPosts/pending'
+//            'posts/fetchPosts/fulfilled'
+//            'posts/fetchPosts/rejected'
+//    ペイロードクリエーター関数：この関数は非同期のロジックを含みます
+//        この関数はasyncであるため、非同期処理を行い、Promiseを返すことができる
+//        この例では、client.get('/fakeApi/posts')を呼び出してサーバーから投稿を取得し、結果を返す
+export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
+  const response = await client.get('/fakeApi/posts')
+  return response.data
+})
 
 // slice: actionとreducerを同時に作る
 // 注意❗️：actionとreducerを同時に作るため、同じ名前が使われる。
@@ -64,6 +81,21 @@ const postsSlice = createSlice({
         existingPost.content = content
       }
     },
+  },
+  extraReducers(builder) {
+    builder
+      .addCase(fetchPosts.pending, (state, action) => {
+        state.status = 'loading'
+      })
+      .addCase(fetchPosts.fulfilled, (state, action) => {
+        state.status = 'succeeded'
+        // Add any fetched posts to the array
+        state.posts = state.posts.concat(action.payload)
+      })
+      .addCase(fetchPosts.rejected, (state, action) => {
+        state.status = 'failed'
+        state.error = action.error.message
+      })
   },
 })
 
