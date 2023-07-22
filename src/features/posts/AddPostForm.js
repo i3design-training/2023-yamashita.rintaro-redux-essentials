@@ -17,6 +17,8 @@ export const AddPostForm = () => {
   const onAuthorChanged = (e) => setUserId(e.target.value)
 
   const onSavePostClicked = () => {
+    console.log(title, content, userId)
+
     if (title && content) {
       dispatch(postAdded(title, content, userId))
       setTitle('')

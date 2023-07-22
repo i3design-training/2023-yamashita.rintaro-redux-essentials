@@ -14,22 +14,27 @@ const postsSlice = createSlice({
     // action：ディスパッチされたアクション。このアクションはpayloadプロパティを持つべきで、新しく追加される投稿
     //    type：アクションの種類を示す文字列です。これにより、リデューサーはアクションの種類に基づいて状態の更新方法を決定する
     //    payload：アクションオブジェクトが持つことができる追加のフィールドで、アクションが運ぶデータを含む。リデューサーが新しい状態を生成するために使用する。
-    postAdded(state, action) {
-      // 新しい投稿（action.payload）を投稿のリスト（state）の末尾に追加する
-      // createSlice関数では、Immerというライブラリが内部で使用されている
-      // Immerは、状態を直接変更するようなコードを書くことを許可し、その変更を元に新しい状態を生成する。
-      // そのため、このコードでは状態を直接変更するような操作（state.push）が許可されている。
-      state.push(action.payload)
-    },
-    prepare(title, content, userId) {
-      return {
-        payload: {
-          id: nanoid(),
-          title,
-          content,
-          user: userId,
-        },
-      }
+    postAdded: {
+      // postAddedアクションがディスパッチされたときに実行
+      // prepareフィールドを使用してアクションのペイロードをカスタマイズする場合、
+      // reducerフィールドを使用してリデューサーを明示的に定義する必要がある
+      reducer(state, action) {
+        // 新しい投稿（action.payload）を投稿のリスト（state）の末尾に追加する
+        // createSlice関数では、Immerというライブラリが内部で使用されている
+        // Immerは、状態を直接変更するようなコードを書くことを許可し、その変更を元に新しい状態を生成する。
+        // そのため、このコードでは状態を直接変更するような操作（state.push）が許可されている。
+        state.push(action.payload)
+      },
+      prepare(title, content, userId) {
+        return {
+          payload: {
+            id: nanoid(),
+            title,
+            content,
+            user: userId,
+          },
+        }
+      },
     },
     postUpdated(state, action) {
       const { id, title, content } = action.payload

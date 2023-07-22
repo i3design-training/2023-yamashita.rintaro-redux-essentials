@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom'
 export const PostsList = () => {
   //ストアの全状態を引数として受け取り、その中から必要なデータを選択する関数を引数として受け取る
   const posts = useSelector((state) => state.posts)
+  console.log(posts)
 
   const renderedPosts = posts.map((post) => (
     <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
-      <p className="post-content">{post.content.substring(0, 100)}</p>
+      <p className="post-content">{post.content}</p>
       <Link to={`/posts/${post.id}`} className="button muted-button">
         View Post
       </Link>
