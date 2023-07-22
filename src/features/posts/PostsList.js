@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 import { TimeAgo } from './TimeAgo'
+import { selectAllPosts } from './postsSlice'
 
 export const PostsList = () => {
   //ストアの全状態を引数として受け取り、その中から必要なデータを選択する関数を引数として受け取る
-  const posts = useSelector((state) => state.posts)
+  const posts = useSelector(selectAllPosts)
   console.log(posts)
 
   // 新しい投稿が先頭に来るように逆の時間順にソート
