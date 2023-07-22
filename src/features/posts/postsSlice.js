@@ -6,17 +6,39 @@ const initialState = [
     id: '1',
     title: 'First Post!',
     content: 'Hello!',
+    user: '0',
     date: sub(new Date(), { minutes: 10 }).toISOString(),
+    reactions: {
+      thumbsUp: 0,
+      hooray: 0,
+      heart: 0,
+      rocket: 0,
+      eyes: 0,
+    },
   },
   {
     id: '2',
     title: 'Second Post',
     content: 'More text',
+    user: '2',
     date: sub(new Date(), { minutes: 5 }).toISOString(),
+    reactions: {
+      thumbsUp: 0,
+      hooray: 0,
+      heart: 0,
+      rocket: 0,
+      eyes: 0,
+    },
   },
 ]
 
 // slice: actionとreducerを同時に作る
+// 注意❗️：actionとreducerを同時に作るため、同じ名前が使われる。
+// reducersオブジェクト内のpostAddedは、リデューサー関数。
+//    postAddedアクションがディスパッチされたときに、Reduxの状態をどのように更新するかを定義する。
+// postsSlice.actions.postAddedは、アクションクリエーター関数。postAddedアクションオブジェクトを生成。
+//    このアクションオブジェクトは、typeプロパティとpayloadプロパティを持ち、それぞれアクションの種類とアクションのペイロード（データ）を表します。
+
 const postsSlice = createSlice({
   name: 'posts',
   initialState,
@@ -48,6 +70,14 @@ const postsSlice = createSlice({
         }
       },
     },
+    reactionAdded(state, action) {
+      const { postId, reaction } = action.payload
+      const existingPost = state.find((post) => post.id === postId)
+      if (existingPost) {
+        // 投稿のreactionsオブジェクト内の対応するリアクションの数を1つ増やす
+        existingPost.reactions[reaction]++
+      }
+    },
     postUpdated(state, action) {
       const { id, title, content } = action.payload
       // const existingPost = state.posts.find((post) => post.id === postId)では？
@@ -60,6 +90,7 @@ const postsSlice = createSlice({
   },
 })
 
-export const { postAdded, postUpdated } = postsSlice.actions
+// アクションクリエーター関数。
+export const { postAdded, postUpdated, reactionAdded } = postsSlice.actions
 
 export default postsSlice.reducer
