@@ -32,9 +32,11 @@ export const addNewPost = createAsyncThunk(
 //            'posts/fetchPosts/pending'
 //            'posts/fetchPosts/fulfilled'
 //            'posts/fetchPosts/rejected'
-//    ペイロードクリエーター関数：この関数は非同期のロジックを含みます
+//    ペイロードクリエーター関数：
 //        この関数はasyncであるため、非同期処理を行い、Promiseを返すことができる
-//        この例では、client.get('/fakeApi/posts')を呼び出してサーバーから投稿を取得し、結果を返す
+//        ペイロードクリエーター関数は、通常2つの引数を取ります：
+//            arg：非同期関数に渡す引数。必要ない場合は_に置き換えられる
+//            thunkAPI：いくつかのフィールドを持つオブジェクトで、dispatchやgetStateなどの関数を含む
 export const fetchPosts = createAsyncThunk('posts/fetchPosts', async () => {
   const response = await client.get('/fakeApi/posts')
   return response.data

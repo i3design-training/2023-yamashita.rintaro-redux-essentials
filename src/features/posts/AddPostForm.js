@@ -23,6 +23,8 @@ export const AddPostForm = () => {
     if (canSave) {
       try {
         setAddRequestStatus('pending')
+        // arg(非同期関数に渡す引数): { title, content, user: userId }
+        // unwrapメソッドは、このPromiseを解決し、成功した場合はpayloadを返し、失敗した場合はエラーをスロー
         await dispatch(addNewPost({ title, content, user: userId })).unwrap()
         setTitle('')
         setContent('')
