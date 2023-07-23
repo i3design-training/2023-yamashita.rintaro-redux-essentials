@@ -1,6 +1,11 @@
 // Reduxは非同期ロジックを可能にするためにミドルウェアを使用する。
 // 標準的な非同期ミドルウェアはredux-thunkで、Redux Toolkitに含まれている
-import { createAsyncThunk, createSlice, nanoid } from '@reduxjs/toolkit'
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  nanoid,
+} from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
 // stateは直接配列ではなく、postsというキーを持つオブジェクト
@@ -131,3 +136,12 @@ export default postsSlice.reducer
 export const selectAllPosts = (state) => state.posts.posts
 export const selectPostById = (state, postId) =>
   state.posts.posts.find((post) => post.id === postId)
+
+// メモ化：前回の入力と計算結果を保存しておき、入力が同じなら再計算せずに前回の結果を返す
+// createSelector関数：
+//    入力が変わったときだけ結果を再計算するメモ化セレクタを生成する
+//    1つ以上の"入力セレクタ"関数と、"出力セレクタ"関数を引数にとる
+export const selectPostsByUser = createSelector(
+  [selectAllPosts, (state, userId) => userId],
+  (posts, userId) => posts.filter((post) => post.user === userId)
+)

@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { selectAllPosts } from '../posts/postsSlice'
+import { selectPostsByUser } from '../posts/postsSlice'
 import { selectUserById } from '../users/usersSlice'
 
 export const UserPage = ({ match }) => {
@@ -9,10 +9,7 @@ export const UserPage = ({ match }) => {
 
   const user = useSelector((state) => selectUserById(state, userId))
 
-  const postsForUser = useSelector((state) => {
-    const allPosts = selectAllPosts(state)
-    return allPosts.filter((post) => post.user === userId)
-  })
+  const postsForUser = useSelector((state) => selectPostsByUser(state, userId))
 
   const postTitles = postsForUser.map((post) => (
     <li key={post.id}>
