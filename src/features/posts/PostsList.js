@@ -5,9 +5,15 @@ import { Spinner } from '../../components/Spinner'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 import { TimeAgo } from './TimeAgo'
-import { fetchPosts, selectAllPosts } from './postsSlice'
+import {
+  fetchPosts,
+  selectAllPosts,
+  selectPostById,
+  selectPostIds,
+} from './postsSlice'
 
-const PostExcerpt = ({ post }) => {
+let PostExcerpt = ({ postId }) => {
+  const post = useSelector((state) => selectPostById(state, postId))
   return (
     <article className="post-excerpt">
       <h3>{post.title}</h3>
@@ -27,6 +33,7 @@ const PostExcerpt = ({ post }) => {
 
 export const PostsList = () => {
   const dispatch = useDispatch()
+  const orderedPostIds = useSelector(selectPostIds)
 
   //ストアの全状態を引数として受け取り、その中から必要なデータを選択する関数を引数として受け取る
   const posts = useSelector(selectAllPosts)
@@ -49,13 +56,8 @@ export const PostsList = () => {
   if (postStatus === 'loading') {
     content = <Spinner text="Loading..." />
   } else if (postStatus === 'succeeded') {
-    // 新しい投稿が先頭に来るように逆の時間順にソート
-    const orderedPosts = posts
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date))
-
-    content = orderedPosts.map((post) => (
-      <PostExcerpt key={post.id} post={post} />
+    content = orderedPostIds.map((postId) => (
+      <PostExcerpt key={postId} postId={postId} />
     ))
   } else if (postStatus === 'failed') {
     content = <div>{error}</div>
