@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { selectAllUsers } from '../users/usersSlice'
 import { addNewPost } from './postsSlice'
 
 export const AddPostForm = () => {
@@ -10,7 +11,9 @@ export const AddPostForm = () => {
 
   const dispatch = useDispatch()
 
-  const users = useSelector((state) => state.users)
+  // 新しいオブジェクトや配列の参照を作成することは避ける
+  // メモ化されたセレクタ関数を使用してレンダリングを最適化
+  const users = useSelector(selectAllUsers)
 
   const onTitleChanged = (e) => setTitle(e.target.value)
   const onContentChanged = (e) => setContent(e.target.value)
