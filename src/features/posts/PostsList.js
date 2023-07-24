@@ -1,5 +1,4 @@
 import classnames from 'classnames'
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { Spinner } from '../../components/Spinner'
 import { useGetPostsQuery } from '../api/apiSlice'
@@ -8,10 +7,8 @@ import { ReactionButtons } from './ReactionButtons'
 import { TimeAgo } from './TimeAgo'
 
 import { useMemo } from 'react'
-import { selectPostById } from './postsSlice'
 
 let PostExcerpt = ({ post }) => {
-  const post = useSelector((state) => selectPostById(state, postId))
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
@@ -41,6 +38,7 @@ export const PostsList = () => {
     // postsが未定義である場合に備えてデフォルトの空の配列を与えておき、常にソート用の配列が存在するように
     data: posts = [],
     isLoading,
+    isFetching,
     isSuccess,
     isError,
     error,

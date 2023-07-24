@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
-import { userAddNewPostMutation } from '../api/apiSlice'
+import { useAddNewPostMutation } from '../api/apiSlice'
 import { selectAllUsers } from '../users/usersSlice'
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [userId, setUserId] = useState('')
-  const [addNewPost, { isLoading }] = userAddNewPostMutation()
+  const [addNewPost, { isLoading }] = useAddNewPostMutation()
 
   // 新しいオブジェクトや配列の参照を作成することは避ける
   // メモ化されたセレクタ関数を使用してレンダリングを最適化
