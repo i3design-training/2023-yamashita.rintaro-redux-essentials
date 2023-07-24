@@ -32,9 +32,12 @@ export const apiSlice = createApi({
       // リクエストのURLは '/fakeApi/posts'
       query: () => '/posts',
     }),
+    getPost: builder.query({
+      query: (postId) => `/posts/${postId}`,
+    }),
   }),
 })
 
 // getPostsクエリエンドポイントの自動生成されたフックをエクスポート
 // createApi関数によって自動的に生成される
-export const { useGetPostsQuery } = apiSlice
+export const { useGetPostsQuery, useGetPostQuery } = apiSlice
