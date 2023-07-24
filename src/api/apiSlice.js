@@ -21,8 +21,17 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const apiSlice = createApi({
   // キャッシュリデューサーは state.api に追加されることを期待（すでにデフォルト - これはオプショナル）
   reducerPath: 'api',
+
   // すべてのリクエストは '/fakeApi' から始まるURLを持つ
   baseQuery: fetchBaseQuery({ baseUrl: '/fakeApi' }),
+
+  // タグを使ってクエリと変異の関係を定義し、データの自動再取得を可能に
+  // タグは文字列または小さなオブジェクトで、特定のタイプのデータに名前をつけたり、キャッシュの一部を無効可能に
+  // キャッシュのタグが無効になると、RTK Queryは自動的にそのタグでマークされたエンドポイントをリフェッチする
+
+  // 'Post'というデータ型に対応する文字列タグ名の配列を宣言
+  tagTypes: ['Post'],
+
   // エンドポイントは、通常、特定のリソースを表す名前と、そのリソースに対する操作（GET、POST、PUT、DELETEなど）を組み合わせたもの
   // デフォルトでは、GET HTTPリクエストを使用
   // { url：'/posts', method: 'POST', body: newPost } のようなオブジェクトを返すことで上書き可能
@@ -31,6 +40,8 @@ export const apiSlice = createApi({
     getPosts: builder.query({
       // リクエストのURLは '/fakeApi/posts'
       query: () => '/posts',
+      // そのクエリのデータを記述するタグのセットを列挙
+      providesTags: ['Post'],
     }),
     getPost: builder.query({
       // 注意❗️: クエリパラメータは単一の値でなければならない
@@ -44,6 +55,8 @@ export const apiSlice = createApi({
         method: 'POST',
         body: initialPost,
       }),
+      // 変異が実行されるたびに無効にされるタグのセットを列挙
+      invalidatesTags: ['Post'],
     }),
   }),
 })
