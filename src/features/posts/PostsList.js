@@ -55,7 +55,6 @@ export const PostsList = () => {
   let content
 
   // 非同期処理が進行中で、結果がまだ得られていない状態
-
   if (isLoading) {
     content = <Spinner text="Loading..." />
   } else if (isSuccess) {

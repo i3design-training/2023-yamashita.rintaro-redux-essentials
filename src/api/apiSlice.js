@@ -33,7 +33,17 @@ export const apiSlice = createApi({
       query: () => '/posts',
     }),
     getPost: builder.query({
+      // 注意❗️: クエリパラメータは単一の値でなければならない
+      // 複数のパラメータを渡す必要がある場合は、複数のフィールドを含むオブジェクトを渡す必要がある（createAsyncThunkと全く同じ)
       query: (postId) => `/posts/${postId}`,
+    }),
+    //  builder.mutation(): 変異エンドポイントの追加
+    addNewPost: builder.mutation({
+      query: (initialPost) => ({
+        url: '/posts',
+        method: 'POST',
+        body: initialPost,
+      }),
     }),
   }),
 })
