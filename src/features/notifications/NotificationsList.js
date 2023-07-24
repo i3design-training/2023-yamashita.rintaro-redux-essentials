@@ -1,3 +1,4 @@
+// 動的にCSSクラス名を生成するためのライブラリ
 import classnames from 'classnames'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { useDispatch, useSelector } from 'react-redux'

@@ -1,15 +1,13 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
+import { useAddNewPostMutation } from '../api/apiSlice'
 import { selectAllUsers } from '../users/usersSlice'
-import { addNewPost } from './postsSlice'
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [userId, setUserId] = useState('')
-  const [addRequestStatus, setAddRequestStatus] = useState('idle')
-
-  const dispatch = useDispatch()
+  const [addNewPost, { isLoading }] = useAddNewPostMutation()
 
   // 新しいオブジェクトや配列の参照を作成することは避ける
   // メモ化されたセレクタ関数を使用してレンダリングを最適化
@@ -19,23 +17,19 @@ export const AddPostForm = () => {
   const onContentChanged = (e) => setContent(e.target.value)
   const onAuthorChanged = (e) => setUserId(e.target.value)
 
-  const canSave =
-    [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
+  const canSave = [title, content, userId].every(Boolean) && !isLoading
 
   const onSavePostClicked = async () => {
     if (canSave) {
       try {
-        setAddRequestStatus('pending')
         // arg(非同期関数に渡す引数): { title, content, user: userId }
         // unwrapメソッドは、このPromiseを解決し、成功した場合はpayloadを返し、失敗した場合はエラーをスロー
-        await dispatch(addNewPost({ title, content, user: userId })).unwrap()
+        await addNewPost({ title, content, user: userId }).unwrap()
         setTitle('')
         setContent('')
         setUserId('')
       } catch (err) {
         console.error('Failed to save the post: ', err)
-      } finally {
-        setAddRequestStatus('idle')
       }
     }
   }

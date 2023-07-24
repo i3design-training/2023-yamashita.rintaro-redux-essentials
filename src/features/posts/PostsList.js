@@ -1,21 +1,16 @@
-import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import classnames from 'classnames'
 import { Link } from 'react-router-dom'
 import { Spinner } from '../../components/Spinner'
+import { useGetPostsQuery } from '../api/apiSlice'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 import { TimeAgo } from './TimeAgo'
-import {
-  fetchPosts,
-  selectAllPosts,
-  selectPostById,
-  selectPostIds,
-} from './postsSlice'
 
-let PostExcerpt = ({ postId }) => {
-  const post = useSelector((state) => selectPostById(state, postId))
+import { useMemo } from 'react'
+
+let PostExcerpt = ({ post }) => {
   return (
-    <article className="post-excerpt">
+    <article className="post-excerpt" key={post.id}>
       <h3>{post.title}</h3>
       <div>
         <PostAuthor userId={post.user} />
@@ -31,41 +26,54 @@ let PostExcerpt = ({ postId }) => {
   )
 }
 
+// 生成された各クエリーフックは、以下のようないくつかのフィールドを含む "result "オブジェクトを返す：
+//    data: サーバからの実際のレスポンス内容。このフィールドはレスポンスを受け取るまで未定義です。
+//    isLoading: このフックが現在サーバーに最初のリクエストを行っているかどうかを示すブール値。(異なるデータをリクエストするためにパラメータが変更された場合、isLoadingはfalseのままであることに注意)。
+//    isFetching: このフックが現在サーバーに対して何らかのリクエストを行っているかどうかを示すブール値。
+//    isSuccess: フックがリクエストに成功し、キャッシュされたデータが利用可能かどうかを示すブール値。
+//    isError: 直近のリクエストにエラーがあったかどうかを示すブール値
+//    error: 直列化されたエラーオブジェクト
 export const PostsList = () => {
-  const dispatch = useDispatch()
-  const orderedPostIds = useSelector(selectPostIds)
+  const {
+    // postsが未定義である場合に備えてデフォルトの空の配列を与えておき、常にソート用の配列が存在するように
+    data: posts = [],
+    isLoading,
+    isFetching,
+    isSuccess,
+    isError,
+    error,
+    refetch,
+  } = useGetPostsQuery()
 
-  //ストアの全状態を引数として受け取り、その中から必要なデータを選択する関数を引数として受け取る
-  const posts = useSelector(selectAllPosts)
-
-  const postStatus = useSelector((state) => state.posts.status)
-  const error = useSelector((state) => state.posts.error)
-
-  useEffect(() => {
-    if (postStatus === 'idle') {
-      dispatch(fetchPosts())
-    }
-    // dispatchが変更されることはほぼないが、
-    // 内部で使用されるすべての外部変数や関数を依存配列に含めるべき、という
-    // Reactのベストプラクティスに従い、潜在的なバグや問題を防ぐ
-  }, [postStatus, dispatch])
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice()
+    // Sort posts in descending chronological order
+    sortedPosts.sort((a, b) => b.date.localeCompare(a.date))
+    return sortedPosts
+  }, [posts])
 
   let content
 
   // 非同期処理が進行中で、結果がまだ得られていない状態
-  if (postStatus === 'loading') {
+  if (isLoading) {
     content = <Spinner text="Loading..." />
-  } else if (postStatus === 'succeeded') {
-    content = orderedPostIds.map((postId) => (
-      <PostExcerpt key={postId} postId={postId} />
+  } else if (isSuccess) {
+    const renderedPosts = sortedPosts.map((post) => (
+      <PostExcerpt key={post.id} post={post} />
     ))
-  } else if (postStatus === 'failed') {
-    content = <div>{error}</div>
-  }
 
+    const containerClassname = classnames('posts-container', {
+      disabled: isFetching,
+    })
+
+    content = <div className={containerClassname}>{renderedPosts}</div>
+  } else if (isError) {
+    content = <div>{error.toString()}</div>
+  }
   return (
     <section className="posts-list">
       <h2>Posts</h2>
+      <button onClick={refetch}>Refetch Posts</button>
       {content}
     </section>
   )
