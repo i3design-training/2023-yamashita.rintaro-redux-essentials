@@ -50,4 +50,5 @@ export const apiSlice = createApi({
 
 // getPostsクエリエンドポイントの自動生成されたフックをエクスポート
 // createApi関数によって自動的に生成される
-export const { useGetPostsQuery, useGetPostQuery } = apiSlice
+export const { useGetPostsQuery, useGetPostQuery, useAddNewPostMutation } =
+  apiSlice
